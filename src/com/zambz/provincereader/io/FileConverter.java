@@ -6,23 +6,23 @@ import java.io.File;
  * Singleton that parses through an image file and generates a province graph based off pixel colour.
  */
 public class FileConverter {
-    private static FileConverter ourInstance = new FileConverter();
+	private static FileConverter ourInstance = new FileConverter();
 
-    public static FileConverter getInstance() {
-        return ourInstance;
-    }
+	public static FileConverter getInstance() {
+		return ourInstance;
+	}
 
-    private File provinceMap;
+	private File provinceMap;
 
-    private FileConverter() {
+	private FileConverter() {
 
-    }
+	}
 
-    public void setProvinceMap(String path) {
-        this.provinceMap = new File(path);
-    }
+	public void setProvinceMap(String path) {
+		this.provinceMap = new File(path);
+	}
 
-    public File getProvinceMap() {
-        return provinceMap;
-    }
+	public File getProvinceMap() {
+		return provinceMap;
+	}
 }
