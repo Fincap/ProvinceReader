@@ -4,6 +4,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.image.DataBufferInt;
+import java.awt.image.Raster;
 import java.io.File;
 import java.io.IOException;
 
@@ -18,7 +19,7 @@ public class FileConverter {
 	}
 
 	private File provinceMap;
-	private byte[] pixels;
+	private int[] pixels;
 
 	public boolean setProvinceMap(String path) {
 		provinceMap = new File(path);
@@ -30,9 +31,11 @@ public class FileConverter {
 	//TODO Fix this method. Byte array only gives -1, 0, or 1, and it can't be casted to an int array.
 	public void generatePixelArray() throws IOException {
 		BufferedImage bi = ImageIO.read(this.provinceMap);
-		this.pixels = ((DataBufferByte) bi.getRaster().getDataBuffer()).getData();
+		this.pixels = new int[bi.getWidth() * bi.getHeight()];
+		Raster raster = bi.getRaster();
+		raster.getPixels(0, 0, bi.getWidth(), bi.getHeight(), this.pixels);
 		Debugger.log("Successfully generated pixel array");
-		for (byte pixel : this.pixels) {
+		for (int pixel : this.pixels) {
 			System.out.println(pixel);
 		}
 	}
