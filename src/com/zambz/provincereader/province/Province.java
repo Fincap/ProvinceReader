@@ -4,6 +4,7 @@ import com.zambz.provincereader.io.Debugger;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 
 /**
@@ -17,13 +18,13 @@ public class Province {
 	private Point vertex;
 	private ArrayList<Integer> xPositions;
 	private ArrayList<Integer> yPositions;
-	private HashMap<Integer, Adjacency> adjaecencies;
+	private ArrayList<Adjacency> adjaecencies;
 
 	public Province(int colour, int startX, int startY) {
 		this.colour = colour;
 		this.xPositions = new ArrayList<>();
 		this.yPositions = new ArrayList<>();
-		this.adjaecencies = new HashMap<>();
+		this.adjaecencies = new ArrayList<>();
 		this.addPoint(startX, startY);
 
 		Debugger.log(String.format("New province added: 0x%08X", this.colour));
@@ -36,12 +37,42 @@ public class Province {
 		//Debugger.log(String.format("Point (%d, %d) added to province 0x%08X", x, y, this.colour));
 	}
 	
-	public void addAdjacency(Province other) {
-	//TODO: Finish
+	public void addAdjacency(Adjacency adj) {
+		if (this.adjaecencies.contains(adj)) return;
+
+		this.adjaecencies.add(adj);
+	}
+
+	public boolean containsAdjacency(Adjacency adj) {
+		return this.adjaecencies.contains(adj);
+	}
+
+	public boolean containsAdjacency(int colour) {
+		for (Adjacency adj : this.adjaecencies) {
+			if (adj.hasProvince(this) && adj.getOther(this).colour == colour) return true;
+		}
+
+		return false;
+	}
+
+	public boolean containsAdjacency(Province prov) {
+		return this.containsAdjacency(prov.getColour());
+	}
+
+	public Adjacency getAdjacency(int index) {
+		return this.adjaecencies.get(index);
 	}
 	
 	public int getColour() {
 		return colour;
+	}
+
+	public Point getVertex() {
+		return vertex;
+	}
+
+	public ArrayList<Adjacency> getAdjaecencies() {
+		return new ArrayList<>(this.adjaecencies);
 	}
 	
 	//Currently calculates centroid. Fine for time being, but eventually want to calculate point of isolation (or faster alternative)
@@ -56,4 +87,21 @@ public class Province {
 		Debugger.log(String.format("Province %d vertex calculated at: %d, %d", this.colour, xAvg, yAvg));
 	}
 
+	@Override
+	public int hashCode() {
+		return this.colour;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof Province)) return false;
+
+		Province p = (Province) obj;
+		return this.colour == p.colour;
+	}
+
+	@Override
+	public String toString() {
+		return String.format("0x%08X", this.colour);
+	}
 }

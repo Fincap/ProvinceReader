@@ -22,6 +22,7 @@ public class ProvinceMap {
 	private int[] pixels;
 	private int mapWidth, mapHeight;
 	private HashMap<Integer, Province> provinces;
+	private HashMap<Integer, Adjacency> adjacencies;
 
 	public ProvinceMap(String provincePath) {
 		this.provinces = new HashMap<>();
@@ -30,6 +31,8 @@ public class ProvinceMap {
 		this.provinceFile = new File(provincePath);
 		Debugger.log(this.provinceFile.toString() + (this.provinceFile.exists() ? " exists" : " doesn't exist! This map will not be able to read pixel data!"));
 	}
+
+
 
 	public void generatePixelArray() throws IOException {
 		BufferedImage fileImg = ImageIO.read(this.provinceFile);
@@ -57,6 +60,7 @@ public class ProvinceMap {
 	 */
 	public void parsePixels() {
 		//Initial parse - Generates provinces
+		Debugger.log("Calculating provinces...");
 		for (int y = 0; y < this.mapHeight; y++) {
 			for (int x = 0; x < this.mapWidth; x++) {
 				int pixel = this.pixels[x + y * this.mapWidth];
@@ -69,12 +73,25 @@ public class ProvinceMap {
 		}
 
 		//Calculate province vertices
+		Debugger.log("Calculating vertices...");
 		for (Province province : provinces.values()) province.calculateVertex();
 
 		//Second parse - Calculates adjacencies
+		//TODO Issues: OOB Exception, last pixel of column will search first pixel of column on next row
+		Debugger.log("Calculating adjacencies...");
 		for (int y = 0; y < this.mapHeight; y++) {
 			for (int x = 0; x < this.mapWidth; x++) {
-//TODO Complete algorithm
+				int pixel = this.pixels[x + y * this.mapWidth];
+				int otherPixel = this.pixels[(x + 1) + y * this.mapWidth]; // out of bounds
+				Province prov = this.provinces.get(pixel);
+				Province otherProv = this.provinces.get(otherPixel);
+				if (pixel != otherPixel) {
+					if (!prov.containsAdjacency(otherPixel)) {
+						//Calculate absolute distance between points - Sqrt ( (p1.x - p2.x)^2 + (p1.y - p2.y)^2 )
+						int distance = (int) Math.sqrt(Math.pow(prov.getVertex().getX() - otherProv.getVertex().getX(), 2) + Math.pow(prov.getVertex().getY() - otherProv.getVertex().getY(), 2));
+						prov.addAdjacency(new Adjacency(prov, otherProv, distance));
+					}
+				}
 			}
 		}
 	}
