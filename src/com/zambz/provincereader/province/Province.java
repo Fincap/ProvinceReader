@@ -44,6 +44,7 @@ public class Province {
 		return colour;
 	}
 	
+	//Currently calculates centroid. Fine for time being, but eventually want to calculate point of isolation (or faster alternative)
 	public void calculateVertex() {
 		int xAvg = 0;
 		int yAvg = 0;
