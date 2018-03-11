@@ -1,9 +1,8 @@
 package com.zambz.provincereader;
 
 import com.zambz.provincereader.io.Debugger;
-import com.zambz.provincereader.io.FileConverter;
+import com.zambz.provincereader.province.ProvinceMap;
 
-import java.io.File;
 import java.io.IOException;
 
 /**
@@ -11,24 +10,21 @@ import java.io.IOException;
  */
 public class ProvinceReader {
 
-	private FileConverter fileConverter;
+	public static String provinceFile = "map/provinces.png";	//Temporary placeholder reference. Will take input/auto-detect in future.
 
-	private String provinceFile = "map/provinces.png";	//Temporary placeholder reference. Will take input/auto-detect.
+	private ProvinceMap map;
 
-	public ProvinceReader() {
-		fileConverter = FileConverter.getInstance();
-		fileConverter.setProvinceMap(provinceFile);
-
-		//Try generate pixel array/read BufferedImage from file
+	public ProvinceReader(String provincePath) {
+		this.map = new ProvinceMap(provincePath);
 		try {
-			fileConverter.generatePixelArray();
+			this.map.generatePixelArray();
 		} catch (IOException e) {
-			Debugger.log("I/O exception generating pixel array");
+			Debugger.log("I/O Exception when trying to read file");
 			Debugger.log(e.getLocalizedMessage());
 		}
 	}
 
 	public static void main(String[] args) {
-		ProvinceReader reader = new ProvinceReader();
+		new ProvinceReader(ProvinceReader.provinceFile);
 	}
 }
