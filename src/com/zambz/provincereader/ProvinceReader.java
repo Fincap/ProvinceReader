@@ -22,6 +22,7 @@ public class ProvinceReader {
 			Debugger.log("I/O Exception when trying to read file");
 			Debugger.log(e.getLocalizedMessage());
 		}
+		this.map.parsePixels();
 	}
 
 	public static void main(String[] args) {

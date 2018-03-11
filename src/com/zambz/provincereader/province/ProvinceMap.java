@@ -8,6 +8,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 
 /**
  * Graph
@@ -19,10 +20,13 @@ public class ProvinceMap {
 
 	private File provinceFile;
 	private int[] pixels;
+	private int mapWidth, mapHeight;
+	private HashMap<Integer, Province> provinces;
 
 	public ProvinceMap(String provincePath) {
+		this.provinces = new HashMap<>();
 		//Try to load image file
-		Debugger.log("Loading map file: " + provincePath);
+		Debugger.log(String.format("Loading map file: %s", provincePath));
 		this.provinceFile = new File(provincePath);
 		Debugger.log(this.provinceFile.toString() + (this.provinceFile.exists() ? " exists" : " doesn't exist! This map will not be able to read pixel data!"));
 	}
@@ -35,6 +39,44 @@ public class ProvinceMap {
 		g.drawImage(fileImg, 0, 0, null);
 		g.dispose();
 		this.pixels = ((DataBufferInt) newImg.getRaster().getDataBuffer()).getData();
+		this.mapWidth = newImg.getWidth();
+		this.mapHeight = newImg.getHeight();
+		Debugger.log(String.format("Province map (%s|%dx%d) successfully loaded", this.provinceFile.toString(), newImg.getWidth(), newImg.getHeight()));
+	}
+
+	/**
+	 * Procedure:
+	 * 1. Check if colour already belongs to a province.
+	 * -> If not, create a new province.
+	 * 2. Add the pixel to the province point list.
+	 * 3. Once all provinces are generated, calculate each province vertex, then run again to calculate adjacencies.
+	 * 5. Check the surrounding pixels.
+	 * -> If it is the same colour, ignore the pixel.
+	 * -> If it's a different colour, check if the pixel belongs to the province's neighbour.
+	 *     -> If it doesn't belong to a neighbour, create a new neighbour relationship between the two provinces, using the absolute distance between two province vertices as weight.
+	 */
+	public void parsePixels() {
+		//Initial parse - Generates provinces
+		for (int y = 0; y < this.mapHeight; y++) {
+			for (int x = 0; x < this.mapWidth; x++) {
+				int pixel = this.pixels[x + y * this.mapWidth];
+				if (!provinces.containsKey(pixel)) {
+					provinces.put(pixel, new Province(pixel, x, y));
+				} else {
+					provinces.get(pixel).addPoint(x, y);
+				}
+			}
+		}
+
+		//Calculate province vertices
+		for (Province province : provinces.values()) province.calculateVertex();
+
+		//Second parse - Calculates adjacencies
+		for (int y = 0; y < this.mapHeight; y++) {
+			for (int x = 0; x < this.mapWidth; x++) {
+//TODO Complete algorithm
+			}
+		}
 	}
 
 }
