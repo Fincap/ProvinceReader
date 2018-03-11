@@ -4,6 +4,7 @@ import com.zambz.provincereader.io.Debugger;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Vertex
@@ -16,11 +17,13 @@ public class Province {
 	private Point vertex;
 	private ArrayList<Integer> xPositions;
 	private ArrayList<Integer> yPositions;
+	private HashMap<Integer, Adjacency> adjaecencies;
 
 	public Province(int colour, int startX, int startY) {
 		this.colour = colour;
 		this.xPositions = new ArrayList<>();
 		this.yPositions = new ArrayList<>();
+		this.adjaecencies = new HashMap<>();
 		this.addPoint(startX, startY);
 
 		Debugger.log(String.format("New province added: 0x%08X", this.colour));
@@ -32,7 +35,15 @@ public class Province {
 
 		//Debugger.log(String.format("Point (%d, %d) added to province 0x%08X", x, y, this.colour));
 	}
-
+	
+	public void addAdjacency(Province other) {
+	//TODO: Finish
+	}
+	
+	public int getColour() {
+		return colour;
+	}
+	
 	public void calculateVertex() {
 		int xAvg = 0;
 		int yAvg = 0;
