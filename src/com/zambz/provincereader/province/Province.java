@@ -4,8 +4,6 @@ import com.zambz.provincereader.io.Debugger;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 
 /**
  * Vertex
@@ -18,13 +16,13 @@ public class Province {
 	private Point vertex;
 	private ArrayList<Integer> xPositions;
 	private ArrayList<Integer> yPositions;
-	private ArrayList<Adjacency> adjaecencies;
+	private ArrayList<Adjacency> adjacencies;
 
 	public Province(int colour, int startX, int startY) {
 		this.colour = colour;
 		this.xPositions = new ArrayList<>();
 		this.yPositions = new ArrayList<>();
-		this.adjaecencies = new ArrayList<>();
+		this.adjacencies = new ArrayList<>();
 		this.addPoint(startX, startY);
 
 		Debugger.log(String.format("New province added: 0x%08X", this.colour));
@@ -38,17 +36,17 @@ public class Province {
 	}
 	
 	public void addAdjacency(Adjacency adj) {
-		if (this.adjaecencies.contains(adj)) return;
+		if (this.adjacencies.contains(adj)) return;
 
-		this.adjaecencies.add(adj);
+		this.adjacencies.add(adj);
 	}
 
 	public boolean containsAdjacency(Adjacency adj) {
-		return this.adjaecencies.contains(adj);
+		return this.adjacencies.contains(adj);
 	}
 
 	public boolean containsAdjacency(int colour) {
-		for (Adjacency adj : this.adjaecencies) {
+		for (Adjacency adj : this.adjacencies) {
 			if (adj.hasProvince(this) && adj.getOther(this).colour == colour) return true;
 		}
 
@@ -60,7 +58,7 @@ public class Province {
 	}
 
 	public Adjacency getAdjacency(int index) {
-		return this.adjaecencies.get(index);
+		return this.adjacencies.get(index);
 	}
 	
 	public int getColour() {
@@ -72,7 +70,7 @@ public class Province {
 	}
 
 	public ArrayList<Adjacency> getAdjaecencies() {
-		return new ArrayList<>(this.adjaecencies);
+		return new ArrayList<>(this.adjacencies);
 	}
 	
 	//Currently calculates centroid. Fine for time being, but eventually want to calculate point of isolation (or faster alternative)
