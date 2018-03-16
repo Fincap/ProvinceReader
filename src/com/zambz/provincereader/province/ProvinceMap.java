@@ -78,20 +78,18 @@ public class ProvinceMap {
 		for (Province province : provinces.values()) province.calculateVertex();
 
 		//Second parse - Calculates adjacencies
-		//TODO Fix connections between Green-Blue, and Green-Red not being made. Not sure what is causing it.
 		Debugger.log("Calculating adjacencies...");
 		for (int y = 0; y < this.mapHeight - 1; y++) {
 			for (int x = 0; x < this.mapWidth - 1; x++) {
-				int xMod = 1;
+				int xMod = 1;		// These modifiers are basically alternating between the two loops to check first the province to the right, then the province below.
 				int yMod = 0;
 				int pixel = this.pixels[x + y * this.mapWidth];
 				for (int i = 0; i < 2; i++) {
 					int otherPixel = this.pixels[(x + xMod) + (y + yMod) * this.mapWidth];
 					Province prov = this.provinces.get(pixel);
 					Province otherProv = this.provinces.get(otherPixel);
-					System.out.printf("%d, %d (checked %d, %d)\n", x, y, xMod, yMod);
 					if (pixel != otherPixel) {
-						if (!this.adjacencies.containsKey(pixel + otherPixel)) {
+						if (!this.adjacencies.containsKey(Adjacency.createHash(pixel, otherPixel))) {
 							//Calculate absolute distance between points - Sqrt ( (p1.x - p2.x)^2 + (p1.y - p2.y)^2 )
 							int distance = (int) Math.sqrt(Math.pow(prov.getVertex().getX() - otherProv.getVertex().getX(), 2) + Math.pow(prov.getVertex().getY() - otherProv.getVertex().getY(), 2));
 							Adjacency adj = new Adjacency(prov, otherProv, distance);
