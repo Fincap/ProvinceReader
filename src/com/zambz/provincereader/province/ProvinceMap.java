@@ -4,6 +4,8 @@ import com.zambz.provincereader.io.Debugger;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.io.File;
@@ -32,8 +34,6 @@ public class ProvinceMap {
 		this.provinceFile = new File(provincePath);
 		Debugger.log(this.provinceFile.toString() + (this.provinceFile.exists() ? " exists" : " doesn't exist! This map will not be able to read pixel data!"));
 	}
-
-
 
 	public void generatePixelArray() throws IOException {
 		BufferedImage fileImg = ImageIO.read(this.provinceFile);
@@ -73,9 +73,12 @@ public class ProvinceMap {
 			}
 		}
 
-		//Calculate province vertices
+		//Calculate province vertices and sea provinces
 		Debugger.log("Calculating vertices...");
 		for (Province province : provinces.values()) province.calculateVertex();
+
+		Debugger.log("Calculating Sea provinces...");
+		for (Province province : provinces.values()) province.calculateSeaProvince();
 
 		//Second parse - Calculates adjacencies
 		Debugger.log("Calculating adjacencies...");
@@ -102,6 +105,39 @@ public class ProvinceMap {
 				}
 			}
 		}
+	}
+
+	public void drawGraph() {
+		int magicMod = 26;
+		int magicOffset = magicMod / 2;
+
+		Debugger.log("Generating image");
+		BufferedImage bi = new BufferedImage(this.mapWidth * magicMod, this.mapHeight * magicMod, BufferedImage.TYPE_INT_RGB);
+		Graphics2D g = bi.createGraphics();
+
+		g.setPaint(Color.WHITE);
+		g.fillRect(0, 0, this.mapWidth * magicMod, this.mapHeight* magicMod);
+		g.setPaint(Color.BLACK);
+
+		for (Adjacency adjacency : this.adjacencies.values()) {
+			if (adjacency.isSeaConnection()) g.setPaint(Color.BLUE); else g.setPaint(Color.BLACK);
+			g.draw(new Line2D.Double(adjacency.getOne().getVertex().getX() * magicMod + magicOffset, adjacency.getOne().getVertex().getY() * magicMod + magicOffset,
+					adjacency.getTwo().getVertex().getX() * magicMod + magicOffset, adjacency.getTwo().getVertex().getY() * magicMod + magicOffset));
+		}
+
+		for (Province province : this.provinces.values()) {
+			if (province.isSeaProvince()) g.setPaint(Color.BLUE); else g.setPaint(Color.BLACK);
+			g.fill(new Ellipse2D.Double(province.getVertex().getX() * magicMod, province.getVertex().getY() * magicMod, magicMod, magicMod));
+		}
+
+		try {
+			ImageIO.write(bi, "PNG", new File("map/graph.png"));
+			Debugger.log("Graph written to: map/graph.png");
+		} catch (IOException e) {
+			Debugger.log("Failed to write to file");
+			Debugger.log(e.getLocalizedMessage());
+		}
+
 	}
 
 }

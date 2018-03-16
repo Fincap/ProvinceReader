@@ -23,6 +23,7 @@ public class ProvinceReader {
 			Debugger.log(e.getLocalizedMessage());
 		}
 		this.map.parsePixels();
+		this.map.drawGraph();
 	}
 
 	public static void main(String[] args) {

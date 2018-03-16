@@ -14,6 +14,7 @@ public class Province {
 
 	private int colour;
 	private Point vertex;
+	private ProvinceType type;
 	private ArrayList<Integer> xPositions;
 	private ArrayList<Integer> yPositions;
 	private ArrayList<Adjacency> adjacencies;
@@ -69,6 +70,19 @@ public class Province {
 		return vertex;
 	}
 
+	public ProvinceType getType() {
+		return type;
+	}
+
+	public boolean isSeaProvince() {
+		return this.type == ProvinceType.SEA;
+	}
+
+	public boolean isCoastal() {
+		for (Adjacency adj : this.adjacencies) if (adj.isSeaConnection()) return true;
+		return false;
+	}
+
 	public ArrayList<Adjacency> getAdjaecencies() {
 		return new ArrayList<>(this.adjacencies);
 	}
@@ -87,6 +101,15 @@ public class Province {
 		yAvg = yAvg / this.yPositions.size();
 		this.vertex = new Point(xAvg, yAvg);
 		Debugger.log(String.format("Province %d vertex calculated at: %d, %d", this.colour, xAvg, yAvg));
+	}
+
+	//Detects if the province is a sea province based off RGB data. If B > R | G then it is a sea province
+	public void calculateSeaProvince() {
+		int r = (this.colour >> 16) & 0xFF;
+		int g = (this.colour >> 8) & 0xFF;
+		int b = this.colour & 0xFF;
+
+		this.type = (b > r && b > g) ? ProvinceType.SEA : ProvinceType.LAND;
 	}
 
 	@Override

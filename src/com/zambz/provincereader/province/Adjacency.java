@@ -10,14 +10,16 @@ public class Adjacency {
 	
 	private Province one, two;
 	private int weight;
+	private ProvinceType type;
 	
 	public Adjacency(Province one, Province two, int weight) {
 		// One/two positions organised by "size" of colour
 		this.one = (one.getColour() < two.getColour()) ? one : two;
 		this.two = (this.one == one) ? two : one;
 		this.weight = weight;
+		this.type = (this.one.isSeaProvince() || this.two.isSeaProvince()) ? ProvinceType.SEA : ProvinceType.LAND;
 
-		Debugger.log(String.format("New adjacency added between %s and %s (weight %d)\tHASH: %d", this.one.toString(), this.two.toString(), this.weight, this.hashCode()));
+		Debugger.log(String.format("New adjacency added between %s and %s (weight %d)\t\tSea: %b\t\tHASH: %d", this.one.toString(), this.two.toString(), this.weight, this.isSeaConnection(), this.hashCode()));
 	}
 
 	public Province getOne() {
@@ -38,6 +40,14 @@ public class Adjacency {
 
 	public int getWeight() {
 		return weight;
+	}
+
+	public ProvinceType getType() {
+		return type;
+	}
+
+	public boolean isSeaConnection() {
+		return this.type == ProvinceType.SEA;
 	}
 
 	@Override
