@@ -89,6 +89,7 @@ public class ProvinceMap {
 					int otherPixel = this.pixels[(x + xMod) + (y + yMod) * this.mapWidth];
 					Province prov = this.provinces.get(pixel);
 					Province otherProv = this.provinces.get(otherPixel);
+					System.out.printf("%d, %d (checked %d, %d)\n", x, y, xMod, yMod);
 					if (pixel != otherPixel) {
 						if (!this.adjacencies.containsKey(pixel + otherPixel)) {
 							//Calculate absolute distance between points - Sqrt ( (p1.x - p2.x)^2 + (p1.y - p2.y)^2 )

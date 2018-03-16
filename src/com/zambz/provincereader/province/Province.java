@@ -73,7 +73,11 @@ public class Province {
 		return new ArrayList<>(this.adjacencies);
 	}
 	
-	//Currently calculates centroid. Fine for time being, but eventually want to calculate point of isolation (or faster alternative)
+	public void nudgeVertex(int x, int y) {
+		this.vertex.setLocation(x, y);
+	}
+	
+	//Currently calculates centroid. Fine for time being, but eventually need to calculate point of isolation (or faster alternative)
 	public void calculateVertex() {
 		int xAvg = 0;
 		int yAvg = 0;
