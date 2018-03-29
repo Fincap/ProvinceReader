@@ -26,6 +26,9 @@ public class ProvinceMap {
 	private HashMap<Integer, Province> provinces;
 	private HashMap<Integer, Adjacency> adjacencies;
 
+	/**
+	 * @param provincePath File path to generate map from.
+	 */
 	public ProvinceMap(String provincePath) {
 		this.provinces = new HashMap<>();
 		this.adjacencies = new HashMap<>();
@@ -35,6 +38,10 @@ public class ProvinceMap {
 		Debugger.log(this.provinceFile.toString() + (this.provinceFile.exists() ? " exists" : " doesn't exist! This map will not be able to read pixel data!"));
 	}
 
+	/**
+	 * Strips the image file of pixel data and generates an integer array of pixel colour data.
+	 * @throws IOException
+	 */
 	public void generatePixelArray() throws IOException {
 		BufferedImage fileImg = ImageIO.read(this.provinceFile);
 		BufferedImage newImg = new BufferedImage(fileImg.getWidth(), fileImg.getHeight(), BufferedImage.TYPE_INT_RGB);
@@ -48,7 +55,7 @@ public class ProvinceMap {
 		Debugger.log(String.format("Province map (%s|%dx%d) successfully loaded", this.provinceFile.toString(), newImg.getWidth(), newImg.getHeight()));
 	}
 
-	/**
+	/*
 	 * Procedure:
 	 * 1. Check if colour already belongs to a province.
 	 * -> If not, create a new province.
@@ -58,6 +65,9 @@ public class ProvinceMap {
 	 * -> If it is the same colour, ignore the pixel.
 	 * -> If it's a different colour, check if the pixel belongs to the province's neighbour.
 	 *     -> If it doesn't belong to a neighbour, create a new neighbour relationship between the two provinces, using the absolute distance between two province vertices as weight.
+	 */
+	/**
+	 * Parses the pixel data array and generates appropriate provinces, adjacencies, and province types.
 	 */
 	public void parsePixels() {
 		//Initial parse - Generates provinces
@@ -107,37 +117,63 @@ public class ProvinceMap {
 		}
 	}
 
-	public void drawGraph() {
-		int magicMod = 26;
-		int magicOffset = magicMod / 2;
+	/**
+	 * Generates an image file graph representation of the province map.
+	 * @param path Destination of the file (not including file extension).
+	 * @param scale Integer upwards scale of the output image file relative to the original province image file.
+	 */
+	public void drawGraph(String path, int scale) {
+		int offset = scale / 2;		// Offset for correctly positioning the circle render
 
 		Debugger.log("Generating image");
-		BufferedImage bi = new BufferedImage(this.mapWidth * magicMod, this.mapHeight * magicMod, BufferedImage.TYPE_INT_RGB);
+		BufferedImage bi = new BufferedImage(this.mapWidth * scale, this.mapHeight * scale, BufferedImage.TYPE_INT_RGB);
 		Graphics2D g = bi.createGraphics();
 
 		g.setPaint(Color.WHITE);
-		g.fillRect(0, 0, this.mapWidth * magicMod, this.mapHeight* magicMod);
+		g.fillRect(0, 0, this.mapWidth * scale, this.mapHeight* scale);
 		g.setPaint(Color.BLACK);
 
 		for (Adjacency adjacency : this.adjacencies.values()) {
 			if (adjacency.isSeaConnection()) g.setPaint(Color.BLUE); else g.setPaint(Color.BLACK);
-			g.draw(new Line2D.Double(adjacency.getOne().getVertex().getX() * magicMod + magicOffset, adjacency.getOne().getVertex().getY() * magicMod + magicOffset,
-					adjacency.getTwo().getVertex().getX() * magicMod + magicOffset, adjacency.getTwo().getVertex().getY() * magicMod + magicOffset));
+			g.draw(new Line2D.Double(adjacency.getOne().getVertex().getX() * scale + offset, adjacency.getOne().getVertex().getY() * scale + offset,
+					adjacency.getTwo().getVertex().getX() * scale + offset, adjacency.getTwo().getVertex().getY() * scale + offset));
 		}
 
 		for (Province province : this.provinces.values()) {
 			if (province.isSeaProvince()) g.setPaint(Color.BLUE); else g.setPaint(Color.BLACK);
-			g.fill(new Ellipse2D.Double(province.getVertex().getX() * magicMod, province.getVertex().getY() * magicMod, magicMod, magicMod));
+			g.fill(new Ellipse2D.Double(province.getVertex().getX() * scale, province.getVertex().getY() * scale, scale, scale));
 		}
 
 		try {
-			ImageIO.write(bi, "PNG", new File("map/graph.png"));
+			ImageIO.write(bi, "PNG", new File(path + ".png"));
 			Debugger.log("Graph written to: map/graph.png");
 		} catch (IOException e) {
 			Debugger.log("Failed to write to file");
 			Debugger.log(e.getLocalizedMessage());
 		}
-
 	}
 
+	/**
+	 * @return This object's provinces HashMap.
+	 */
+	public HashMap<Integer, Province> getProvinces() {
+		return provinces;
+	}
+
+	/**
+	 * @param x x value of pixel.
+	 * @param y y value of pixel.
+	 * @return Province located at given position
+	 */
+	public Province getProvince(int x, int y) {
+		return this.provinces.get(this.pixels[x + y * this.mapWidth]);
+	}
+
+	/**
+	 * @param colour Colour of desired province.
+	 * @return Province of specified colour.
+	 */
+	public Province getProvince(int colour) {
+		return this.provinces.get(colour);
+	}
 }
