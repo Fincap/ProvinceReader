@@ -1,6 +1,6 @@
 package com.zambz.provincereader.province;
 
-import com.zambz.provincereader.io.Debugger;
+import com.zambz.debugger.Debugger;
 
 /**
  * Edge
@@ -25,7 +25,7 @@ public class Adjacency {
 		this.weight = weight;
 		this.type = (this.one.isSeaProvince() || this.two.isSeaProvince()) ? ProvinceType.SEA : ProvinceType.LAND;
 
-		Debugger.log(String.format("New adjacency added between %s and %s (weight %d)\t\tSea: %b\t\tHASH: %d", this.one.toString(), this.two.toString(), this.weight, this.isSeaConnection(), this.hashCode()));
+		Debugger.log("New adjacency added between %s and %s (weight %d)\t\tSea: %b\t\tHASH: %d", this.one.toString(), this.two.toString(), this.weight, this.isSeaConnection(), this.hashCode());
 	}
 
 	/**

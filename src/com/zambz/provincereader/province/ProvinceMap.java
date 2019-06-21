@@ -1,7 +1,6 @@
 package com.zambz.provincereader.province;
 
-import com.zambz.provincereader.io.Debugger;
-
+import com.zambz.debugger.Debugger;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
@@ -33,7 +32,7 @@ public class ProvinceMap {
 		this.provinces = new HashMap<>();
 		this.adjacencies = new HashMap<>();
 		//Try to load image file
-		Debugger.log(String.format("Loading map file: %s", provincePath));
+		Debugger.log("Loading map file: %s", provincePath);
 		this.provinceFile = new File(provincePath);
 		Debugger.log(this.provinceFile.toString() + (this.provinceFile.exists() ? " exists" : " doesn't exist! This map will not be able to read pixel data!"));
 	}
@@ -52,7 +51,7 @@ public class ProvinceMap {
 		this.pixels = ((DataBufferInt) newImg.getRaster().getDataBuffer()).getData();
 		this.mapWidth = newImg.getWidth();
 		this.mapHeight = newImg.getHeight();
-		Debugger.log(String.format("Province map (%s|%dx%d) successfully loaded", this.provinceFile.toString(), newImg.getWidth(), newImg.getHeight()));
+		Debugger.log("Province map (%s|%dx%d) successfully loaded", this.provinceFile.toString(), newImg.getWidth(), newImg.getHeight());
 	}
 
 	/*
@@ -85,7 +84,7 @@ public class ProvinceMap {
 
 		//Calculate province vertices and sea provinces
 		Debugger.log("Calculating vertices...");
-		for (Province province : provinces.values()) province.calculateVertex();
+		for (Province province : provinces.values()) province.calculateCentroid();
 
 		Debugger.log("Calculating Sea provinces...");
 		for (Province province : provinces.values()) province.calculateSeaProvince();
@@ -97,7 +96,7 @@ public class ProvinceMap {
 				int xMod = 1;		// These modifiers are basically alternating between the two loops to check first the province to the right, then the province below.
 				int yMod = 0;
 				int pixel = this.pixels[x + y * this.mapWidth];
-				for (int i = 0; i < 2; i++) {
+				for (int i = 0; i < 3; i++) {
 					int otherPixel = this.pixels[(x + xMod) + (y + yMod) * this.mapWidth];
 					Province prov = this.provinces.get(pixel);
 					Province otherProv = this.provinces.get(otherPixel);
@@ -110,7 +109,7 @@ public class ProvinceMap {
 							this.adjacencies.put(adj.hashCode(), adj);
 						}
 					}
-					xMod = 0;
+					xMod = (xMod == 1 && yMod == 0) ? 1 : 0;
 					yMod = 1;
 				}
 			}
@@ -142,11 +141,13 @@ public class ProvinceMap {
 		for (Province province : this.provinces.values()) {
 			if (province.isSeaProvince()) g.setPaint(Color.BLUE); else g.setPaint(Color.BLACK);
 			g.fill(new Ellipse2D.Double(province.getVertex().getX() * scale, province.getVertex().getY() * scale, scale, scale));
+			/*g.setPaint(new Color(province.getColour()));
+			g.drawPolygon(province.getScaledPolygon(scale));*/
 		}
 
 		try {
 			ImageIO.write(bi, "PNG", new File(path + ".png"));
-			Debugger.log("Graph written to: map/graph.png");
+			Debugger.log("Graph written to: /%s.png", path);
 		} catch (IOException e) {
 			Debugger.log("Failed to write to file");
 			Debugger.log(e.getLocalizedMessage());

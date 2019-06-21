@@ -1,10 +1,13 @@
 package com.zambz.provincereader.province;
 
-import com.zambz.provincereader.io.Debugger;
-
+import com.zambz.debugger.Debugger;
 import java.awt.*;
 import java.util.ArrayList;
 
+/*TODO - Calculate "edge" of province shape
+ Problems:
+ - Calculating pole of inaccessibility
+ */
 /**
  * Vertex
  * Individual province class, defining the province's data, as well as containing the vertex and
@@ -15,6 +18,7 @@ public class Province {
 	private int colour;
 	private Point vertex;
 	private ProvinceType type;
+	private ArrayList<Point> points;
 	private ArrayList<Integer> xPositions;
 	private ArrayList<Integer> yPositions;
 	private ArrayList<Adjacency> adjacencies;
@@ -27,12 +31,13 @@ public class Province {
 	 */
 	public Province(int colour, int startX, int startY) {
 		this.colour = colour;
+		this.points = new ArrayList<>();
 		this.xPositions = new ArrayList<>();
 		this.yPositions = new ArrayList<>();
 		this.adjacencies = new ArrayList<>();
 		this.addPoint(startX, startY);
 
-		Debugger.log(String.format("New province added: 0x%08X", this.colour));
+		Debugger.log("New province added: 0x%08X", this.colour);
 	}
 
 	/**
@@ -41,10 +46,9 @@ public class Province {
 	 * @param y Point's y position.
 	 */
 	public void addPoint(int x, int y) {
+		this.points.add(new Point(x, y));
 		this.xPositions.add(x);
 		this.yPositions.add(y);
-
-		//Debugger.log(String.format("Point (%d, %d) added to province 0x%08X", x, y, this.colour));
 	}
 
 	/**
@@ -150,7 +154,13 @@ public class Province {
 	/**
 	 * Calculates the centroid of all points in province's positions list and sets the province's vertex to the centroid.
 	 */
-	public void calculateVertex() {
+	public void calculateCentroid() {
+		/*ArrayList<Integer> xPositions = new ArrayList<>();
+		for (int x = 0; x < this.points.size(); x++) xPositions.add(this.points.get(x).x);
+
+		ArrayList<Integer> yPositions = new ArrayList<>();
+		for (int y = 0; y < this.points.size(); y++) xPositions.add(this.points.get(y).y);*/
+
 		int xAvg = 0;
 		int yAvg = 0;
 		for (int x : this.xPositions) xAvg += x;

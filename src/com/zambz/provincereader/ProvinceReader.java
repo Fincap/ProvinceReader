@@ -1,6 +1,6 @@
 package com.zambz.provincereader;
 
-import com.zambz.provincereader.io.Debugger;
+import com.zambz.debugger.Debugger;
 import com.zambz.provincereader.province.ProvinceMap;
 
 import java.io.IOException;
@@ -50,6 +50,8 @@ public class ProvinceReader {
 	}
 
 	public static void main(String[] args) {
-		new ProvinceReader("map/provinces.png");
+		ProvinceReader reader = new ProvinceReader("map/provinces1.png");
+		reader.parseMap();
+		reader.drawMap("map/graph1", 26);
 	}
 }
