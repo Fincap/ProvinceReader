@@ -28,13 +28,18 @@ public class ProvinceMap {
 	/**
 	 * @param provincePath File path to generate map from.
 	 */
-	public ProvinceMap(String provincePath) {
+	public ProvinceMap(String provincePath) throws IOException {
 		this.provinces = new HashMap<>();
 		this.adjacencies = new HashMap<>();
 		//Try to load image file
 		Debugger.log("Loading map file: %s", provincePath);
 		this.provinceFile = new File(provincePath);
-		Debugger.log(this.provinceFile.toString() + (this.provinceFile.exists() ? " exists" : " doesn't exist! This map will not be able to read pixel data!"));
+		if (this.provinceFile.exists()) {
+			Debugger.log("%s exists", this.provinceFile.toString());
+		} else {
+			Debugger.log("%s doesn't exist!", this.provinceFile.toString());
+			throw new IOException("Province filepath doesn't exist");
+		}
 	}
 
 	/**

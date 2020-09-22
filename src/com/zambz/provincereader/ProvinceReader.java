@@ -16,14 +16,9 @@ public class ProvinceReader {
 	 * Constructor reads the province file path, generates the map instance, and strips the data from the image file.
 	 * @param provincePath A string describing the location of the province image file.
 	 */
-	public ProvinceReader(String provincePath) {
+	public ProvinceReader(String provincePath) throws IOException {
 		this.map = new ProvinceMap(provincePath);
-		try {
-			this.map.generatePixelArray();
-		} catch (IOException e) {
-			Debugger.log("I/O Exception when trying to read file");
-			Debugger.log(e.getLocalizedMessage());
-		}
+		this.map.generatePixelArray();
 	}
 
 	/**
@@ -50,8 +45,13 @@ public class ProvinceReader {
 	}
 
 	public static void main(String[] args) {
-		ProvinceReader reader = new ProvinceReader("map/provinces1.png");
-		reader.parseMap();
-		reader.drawMap("map/graph1", 26);
+		try{
+			ProvinceReader reader = new ProvinceReader("map/provinces.png");
+			reader.parseMap();
+			reader.drawMap("map/graph1", 26);
+		} catch (IOException e) {
+			Debugger.log("I/O Exception when trying to read file");
+			Debugger.log(e.getLocalizedMessage());
+		}
 	}
 }
