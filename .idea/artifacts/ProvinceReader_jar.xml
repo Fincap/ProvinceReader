@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" name="ProvinceReader:jar">
-    <output-path>$PROJECT_DIR$/out/artifacts/ProvinceReader_jar</output-path>
-    <root id="archive" name="ProvinceReader.jar">
-      <element id="module-output" name="ProvinceReader" />
-    </root>
-  </artifact>
-</component>
